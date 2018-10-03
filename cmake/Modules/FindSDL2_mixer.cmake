@@ -40,7 +40,7 @@ find_path(SDL_MIXER_INCLUDE_DIR SDL_mixer.h
   HINTS
     ENV SDLMIXERDIR
     ENV SDLDIR
-  PATH_SUFFIXES include/SDL2 include
+  PATH_SUFFIXES include/SDL2 include headers headers/x86
   PATHS
   ${PROJECT_ROOT_DIR}/ext/SDL2
 )
