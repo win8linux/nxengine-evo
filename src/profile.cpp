@@ -239,15 +239,21 @@ char *GetProfileName(int num)
     std::string profile;
         
 #ifndef __HAIKU__
-        if (num == 0)
-                return "profile.dat";
-        else
-                return stprintf("profile%d.dat", num+1);
+    if (num == 0)
+        return "profile.dat";
+    else
+        return stprintf("profile%d.dat", num+1);
 #else
-        if (num == 0)
-                return "/boot/home/config/settings/NXEngine/profile.dat";
-        else
-                return stprintf("/boot/home/config/settings/NXEngine/profile%d.dat", num+1);
+    char path[PATH_MAX];
+	char *haikuPath = getHaikuSettingsPath();
+	strcpy(path, haikuPath);
+	if (num == 0) {
+		strcat(path, "profile.dat");
+	} else {
+		strcat(path, "profile%d.dat");
+	}
+	free(haikuPath);
+	return stprintf(path, num+1);
 #endif
         
         if (num == 0)

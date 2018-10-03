@@ -22,4 +22,8 @@
 
 const char *strhex(int value);
 
+#ifdef __HAIKU__
+char *getHaikuSettingsPath();
+#endif
+
 #endif

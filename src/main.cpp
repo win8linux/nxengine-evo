@@ -1,3 +1,8 @@
+#ifdef __HAIKU__
+#include <libgen.h>
+#include <sys/stat.h>
+#include <PathFinder.h>
+#endif
 
 #include "nx.h"
 #include <cstdarg>
@@ -6,10 +11,6 @@
 #else
 #include <io.h>
 #include <direct.h>
-#endif
-#ifdef __HAIKU__
-#include <libgen.h>
-#include <sys/stat.h>
 #endif
 //#include "main.h"
 #include <SDL_mixer.h>
@@ -265,10 +266,14 @@ int main(int argc, char *argv[])
 {
 
 #ifdef __HAIKU__
+    char *haikuPath = getHaikuSettingsPath();
     // To make it able to start from Tracker
     chdir(dirname(argv[0]));
-    mkdir("/boot/home/config/settings/NXEngine-evo/", 0755);
-    mkdir("/boot/home/config/settings/NXEngine-evo/replay", 0755);
+    char path[PATH_MAX];
+    strcpy(path, haikuPath);
+    strcat(path, "replay");
+    mkdir(haikuPath, 0755);
+    mkdir(path, 0755);
 #endif
 
 bool inhibit_loadfade = false;
@@ -289,9 +294,13 @@ bool freshstart;
     SDL_free(prefpath);
 
 #ifndef __HAIKU__
-        SetLogFilename("debug.txt");
+    SetLogFilename("debug.txt");
 #else
-        SetLogFilename("/boot/home/config/settings/NXEngine/debug.txt");
+    char logfile[PATH_MAX];
+    strcpy(logfile, haikuPath);
+    strcat(logfile, "debug.txt");
+    SetLogFilename(logfile);
+    free(haikuPath);
 #endif
 
     SetLogFilename(logpath.c_str());
@@ -440,5 +449,12 @@ ingame_error: ;
     goto shutdown;
 }
 
-
+#ifdef __HAIKU__
+char *getHaikuSettingsPath() {
+	char path[PATH_MAX];
+	find_directory(B_USER_SETTINGS_DIRECTORY, -1, false, path, sizeof(path));
+	strcat(path, "/NXEngine/");
+	return strdup(path);
+}
+#endif
 

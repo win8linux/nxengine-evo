@@ -11,12 +11,7 @@
 #include "ResourceManager.h"
 #include "common/stat.h"
 #include "common/misc.h"
-
-#ifndef __HAIKU__
-const char *setfilename = "settings.dat";
-#else
-const char *setfilename = "/boot/home/config/settings/NXEngine-evo/settings.dat";
-#endif
+#include "nx.h"
 
 const uint32_t SETTINGS_VERSION = ( ( '3' << 24 ) + ( 'S' << 16 ) + ( 'X' << 8 ) + 'N' );		// serves as both a version and magic
 
@@ -32,8 +27,16 @@ FILE *fp;
 	SDL_free(basepath);
 
 	stat("Loading settings...");
-	
+#ifdef __HAIKU__
+	char path[PATH_MAX];
+	char *haikuPath = getHaikuSettingsPath();
+	strcpy(path, haikuPath);
+	strcat(path, setfilename);
+	free(haikuPath);
+	fp = fileopen(path, "rb");
+#else	
 	fp = myfopen(widen(path).c_str(), widen("rb").c_str());
+#endif
 	if (!fp)
 	{
 		stat("Couldn't open file %s.", path.c_str());
@@ -132,7 +135,16 @@ FILE *fp;
 		setfile = &normal_settings;
 	
 	stat("Writing settings...");
+#ifdef __HAIKU__
+	char path[PATH_MAX];
+	char *haikuPath = getHaikuSettingsPath();
+	strcpy(path, haikuPath);
+	strcat(path, setfilename);
+	free(haikuPath);
 	fp = myfopen(widen(path).c_str(), widen("wb").c_str());
+#else
+    fp = fileopen(setfilename, "wb");
+#endif
 	if (!fp)
 	{
 		stat("Couldn't open file %s.", path.c_str());
