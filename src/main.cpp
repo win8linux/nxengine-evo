@@ -7,6 +7,9 @@
 #include <io.h>
 #include <direct.h>
 #endif
+#ifdef __HAIKU__
+#include <libgen.h>
+#endif
 //#include "main.h"
 #include <SDL_mixer.h>
 #include "game.h"
@@ -259,6 +262,12 @@ void InitNewGame(bool with_intro)
 
 int main(int argc, char *argv[])
 {
+
+#ifdef __HAIKU__
+    // To make it able to start from Tracker
+    chdir(dirname(argv[0]));
+#endif
+
 bool inhibit_loadfade = false;
 bool error = false;
 bool freshstart;
