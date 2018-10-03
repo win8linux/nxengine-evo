@@ -12,6 +12,12 @@
 #include "common/stat.h"
 #include "common/misc.h"
 
+#ifndef __HAIKU__
+const char *setfilename = "settings.dat";
+#else
+const char *setfilename = "/boot/home/config/settings/NXEngine-evo/settings.dat";
+#endif
+
 const uint32_t SETTINGS_VERSION = ( ( '3' << 24 ) + ( 'S' << 16 ) + ( 'X' << 8 ) + 'N' );		// serves as both a version and magic
 
 Settings normal_settings;
@@ -76,6 +82,11 @@ bool settings_load(Settings *setfile)
 		setfile->last_save_slot = 0;
 		setfile->multisave = true;
 		setfile->fullscreen = false;
+#ifndef __HAIKU__
+		setfile->files_extracted = false;
+#else
+		setfile->files_extracted = true;
+#endif
 		
 #if defined(DEBUG)
 		setfile->enable_debug_keys = true;
